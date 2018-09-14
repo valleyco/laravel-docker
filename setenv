@@ -1,0 +1,13 @@
+#!/bin/bash
+export SOURCE_DIR=`pwd`
+export BASE_DIR=`dirname "$0"`
+export VOLUME_DIR=$SOURCE_DIR
+export APP_NAME=app
+export PATH="$BASE_DIR/bin:$PATH"
+
+cd $VOLUME_DIR
+mkdir -p volume/log/app volume/log/nginx volume/cache volume/session volume/mysql volume/log/mysql
+touch volume/log/app/cli.log volume/log/app/cron.log
+chmod 777 volume/log/app volume/log/app/cron.log
+cd $SOURCE_DIR
+/bin/bash

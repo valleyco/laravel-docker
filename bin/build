@@ -1,0 +1,4 @@
+#!/bin/bash
+cd `dirname $0`/..
+docker-compose  -f docker-compose.yml  -p $APP_NAME build
+docker build --build-arg APP_NAME="$APP_NAME" -t "$APP_NAME-cli" ./cli/

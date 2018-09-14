@@ -1,0 +1,92 @@
+#!/bin/bash
+
+DOCKER_COMPOSE_PATH="$HOME/bin/docker-compose"
+DOCKER_COMPOSE_VERSION="1.21.0"
+
+Color_Off='\033[0m'       # Text Reset
+
+# Regular Colors
+Black='\033[0;30m'        # Black
+Red='\033[0;31m'          # Red
+Green='\033[0;32m'        # Green
+Yellow='\033[0;33m'       # Yellow
+Blue='\033[0;34m'         # Blue
+Purple='\033[0;35m'       # Purple
+Cyan='\033[0;36m'         # Cyan
+White='\033[0;37m'        # White
+
+On_IYellow='\033[0;103m'  # Yellow
+BYellow='\033[1;33m'
+
+MESSAGES='';
+
+function package_installed(){
+   dpkg -s $1 > /dev/null 2>/dev/null
+ }
+
+# usage: user_in_group USER GROUP
+function user_in_group(){
+    if id -Gn $1 | grep  &> /dev/null  -c $2; then return 0; else return 1; fi
+}
+
+function get_user_id(){
+    id -u $1
+}
+
+# $1 group name
+function get_group_id(){
+    echo `getent group $1 |  cut -d: -f3`
+}
+
+function message_append(){
+   MESSAGES="$MESSAGES\n$1"
+}
+
+function message_exit(){
+    message_append "$1"
+    printf "$MESSAGES\n $Color_Off"
+    exit;
+}
+
+function message_ok(){
+    printf "${Green}$1\n$Color_Off"
+}
+
+# Install docker if not already exists and add current user to 'docker'' group
+function install_docker(){
+    if  package_installed 'docker-ce' ; 
+    then 
+        printf "${Green}Docker already installed\n$Color_Off" ;
+        return 0;  
+    fi
+    sudo apt-get install apt-transport-https ca-certificates  curl  software-properties-common
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    sudo apt-key fingerprint 0EBFCD88
+    sudo add-apt-repository   "deb [arch=amd64] https://download.docker.com/linux/ubuntu  $(lsb_release -cs) stable"
+    sudo apt-get update
+    sudo apt-get install linux-image-extra-$(uname -r) linux-image-extra-virtual
+    sudo apt-get install docker-ce
+}
+
+install_docker
+
+if ! user_in_group $USER docker
+then
+    sudo usermod -aG docker $USER
+    message_exit "${BYellow}Please log out and login and run this script again" 
+else
+  message_ok "User $USER is in group 'docker' "
+fi
+
+
+mkdir -p  ~/bin
+
+if [ ! -f $DOCKER_COMPOSE_PATH ] 
+then
+    message_ok "Installing Docker compose..."
+    curl -L https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-`uname -s`-`uname -m` -o $DOCKER_COMPOSE_PATH
+    chmod +x $DOCKER_COMPOSE_PATH
+    message_ok "Docker compose  installed"
+else 
+  message_ok "Docker compose already installed"
+fi

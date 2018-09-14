@@ -1,0 +1,31 @@
+#!/bin/bash
+
+APP_PATH=/opt/superpharm
+APP_LOG_PATH=/var/log/superpharm 
+APP_CACHE_PATH=/tmp/cache
+APP_SESSION_PATH=/tmp/sesstion
+
+
+sudo mkdir -p $APP_LOG_PATH
+sudo chown www-data:adm $APP_LOG_PATH
+sudo chmod 754 $APP_LOG_PATH
+
+
+sudo mkdir -p $APP_CACHE_PATH
+sudo chown www-data:adm $APP_CACHE_PATH
+sudo chmod 754 $APP_CACHE_PATH
+
+sudo mkdir -p $APP_SESSION_PATH
+sudo chown www-data:adm $APP_SESSION_PATH
+sudo chmod 754 $APP_SESSION_PATH
+
+sudo mkdir -p /opt
+cd /opt
+sudo git clone ssh://git@bitbucket.org/levydavid/superpharmprice.git superpharm
+
+sudo chown  --recursive www-data:www-data $APP_PATH
+sudo chmod 754 $APP_PATH
+
+curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
+
+cd $APP_PATH

@@ -1,0 +1,6 @@
+#!/bin/bash
+#-v `pwd`/cli/scripts:/home/valley/bin
+#docker build -t app-cli
+docker run  --network ${APP_NAME}_default --add-host  ${APP_NAME}_mysql_1:`docker inspect ${APP_NAME}_mysql_1 | grep IPAddress | cut -d '"' -f 4 | grep -m 1 .`  -v $SOURCE_DIR:/opt/app -v $HOME/.ssh:/home/valley/.ssh -w /opt/app -it --name ${APP_NAME}-cli-container ${APP_NAME}-cli /bin/bash
+docker container rm ${APP_NAME}-cli-container
+#docker exec -it app-cli /bin/bash

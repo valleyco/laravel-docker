@@ -1,0 +1,62 @@
+version: '3'
+services:
+  nginx:
+      image: 'nginx:1.14.0'
+      restart: on-failure:10
+      ports:
+          - '80:80'
+          - '443:443'
+      volumes:
+          - ${SOURCE_DIR}/volume/log/nginx:/var/log/nginx
+          - ./nginx/etc/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf
+          - ./nginx/etc/ssl/tpa.valley.local:/etc/ssl/tpa.valley.local
+          - ${SOURCE_DIR}/$WEBROOT:/opt/app/public
+  php-fpm:
+      build : php-fpm
+      restart: on-failure:10
+      volumes:
+          - ${SOURCE_DIR}/volume/log:/var/log/
+          - ${SOURCE_DIR}/volume/cache:/tmp/cache
+          - ${SOURCE_DIR}/volume/session:/tmp/session
+          - ${SOURCE_DIR}/:/opt/app
+  php-cli:
+      build :
+        context: php-cli
+        args:
+          - APP_NAME
+      restart: on-failure:10
+      volumes:
+          - ${SOURCE_DIR}/volume/log:/var/log/
+          - ${SOURCE_DIR}/volume/cache:/tmp/cache
+          - ${SOURCE_DIR}/volume/session:/tmp/session
+          - ${SOURCE_DIR}/:/opt/app
+  mysql:
+      image: 'mysql:5.7.19'
+      restart: on-failure:10
+      volumes:
+          - ${SOURCE_DIR}/volume/mysql:/var/lib/mysql
+          - ${SOURCE_DIR}/volume/log/mysql:/var/log/mysql
+      environment:
+          - MYSQL_ROOT_PASSWORD=davidlevy
+      ports:
+          - '3306:3306'
+
+  memcached:
+      restart: on-failure:10
+      image: memcached
+
+#  rabbitmq:
+#    image: "rabbitmq:3.6.15-management-alpine"
+  beanstalkd:
+        image: schickling/beanstalkd
+  mailcatcher:
+    image: tophfr/mailcatcher
+    ports:
+      - 1080:80
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:4.8.3
+    environment:
+      - PMA_HOST=mysql
+    ports:
+      - "8088:80"

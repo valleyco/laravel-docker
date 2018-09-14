@@ -1,0 +1,6 @@
+#!/bin/bash
+#sudo apt-get update
+sudo apt-get install mc curl git nginx mysql-server pkg-config php-fpm php-mysqli memcached libmemcached-dev php-mcrypt php-gd php-pear php-dev php-curl php-cli 
+sudo pecl install memcached 
+echo memcached.so | sudo tee /etc/php/7.0/mods-available/memcached.ini
+sudo phpenmod memcached
