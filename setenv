@@ -2,7 +2,7 @@
 export SOURCE_DIR=`pwd`
 export BASE_DIR=`dirname "$0"`
 export VOLUME_DIR=$SOURCE_DIR
-export APP_NAME=app
+export APP_NAME=laravel
 export PATH="$BASE_DIR/bin:$PATH"
 
 cd $VOLUME_DIR
