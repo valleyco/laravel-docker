@@ -1,0 +1,5 @@
+#!/bin/bash
+mkdir ~/.npm-packages
+npm config set prefix ~/.npm-packages
+echo ~/.npm-packages/bin:$PATH >>/home/valley/.bashrc
+ln -s /usr/bin/nodejs ~/bin/node
